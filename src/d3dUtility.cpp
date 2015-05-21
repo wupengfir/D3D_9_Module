@@ -139,7 +139,7 @@ bool d3d::InitD3D(
 	return true;
 }
 
-int d3d::EnterMsgLoop( bool (*ptr_display)(float timeDelta) )
+int d3d::EnterMsgLoop( TestRoot* test )
 {
 	MSG msg;
 	::ZeroMemory(&msg, sizeof(MSG));
@@ -158,7 +158,7 @@ int d3d::EnterMsgLoop( bool (*ptr_display)(float timeDelta) )
 			float currTime  = (float)timeGetTime();
 			float timeDelta = (currTime - lastTime)*0.001f;
 
-			ptr_display(timeDelta);
+			test->display(timeDelta);
 
 			lastTime = currTime;
         }
@@ -166,4 +166,29 @@ int d3d::EnterMsgLoop( bool (*ptr_display)(float timeDelta) )
     return msg.wParam;
 }
 
+D3DMATERIAL9 d3d::initMtrl(D3DXCOLOR a,D3DXCOLOR d,D3DXCOLOR s,D3DXCOLOR e,float p){
+	D3DMATERIAL9 mtrl;
+	mtrl.Ambient = a;
+	mtrl.Diffuse = d;
+	mtrl.Specular = s;
+	mtrl.Emissive = e;
+	mtrl.Power = p;
+	return mtrl;
+}
 
+D3DLIGHT9 d3d::initDirectonalLight(D3DXVECTOR3* dir,D3DXCOLOR* color){
+	D3DLIGHT9 light;
+	ZeroMemory(&light,sizeof(D3DLIGHT9));
+	light.Type =  D3DLIGHT_DIRECTIONAL;
+	light.Ambient = *color * 0.4f;
+	light.Diffuse = *color;
+	light.Specular = *color * 0.6f;
+	light.Direction = *dir;
+	return light;
+}
+
+void d3d::computNormal(D3DXVECTOR3* p0,D3DXVECTOR3* p1,D3DXVECTOR3* p2,D3DXVECTOR3* out){
+	D3DXVECTOR3 u = *p1 - *p0;
+	D3DXVECTOR3 v = *p2 - *p0;
+	D3DXVec3Cross(out,&u,&v);
+}
